@@ -25,14 +25,9 @@ public class baekjun1024 {
 				for(int i = 0; i < count; i++) {
 					result.add((sum_copy / count) + i);
 				}
-//				if(result.get(0) < 0) {
-//					return new ArrayList<Integer>(Arrays.asList(-1));
-//				}
-				return result;
-			}
-			if(sum_copy / count < 1) {
-				// 수열이 존재하지 않을 때
-				result.add(-1);
+				if(result.get(0) < 0) {
+					return new ArrayList<Integer>(Arrays.asList(-1));
+				}
 				return result;
 			}
 			count++;
