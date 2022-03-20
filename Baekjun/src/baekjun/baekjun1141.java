@@ -44,7 +44,10 @@ public class baekjun1141 {
 		for(int i = 0; i < num; i++) {
 			words.add(br.readLine());
 		}
+		br.close();
 		baekjun1141 b = new baekjun1141();
-		System.out.println(b.getPrefixSet(words));
+        bw.write(b.getPrefixSet(words) + "\n");
+		bw.flush();
+        bw.close();
 	}
 }
