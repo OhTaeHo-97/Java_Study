@@ -8,20 +8,6 @@ import java.io.OutputStreamWriter;
 
 public class baekjun2410 {
 	public long getReciprocalNum(int num) {
-//		if(num == 1) {
-//			return 1;
-//		}
-//		long reciprocalNum = 2;
-//		int dif = 0;
-//		int count = 0;
-//		for(int i = 2; i <= num; i += 2) {
-//			reciprocalNum += dif;
-//			if(count % 2 == 0) {
-//				dif += 2;
-//			}
-//			count++;
-//		}
-//		return reciprocalNum % 1000000000;
 		int binary_num = Integer.toBinaryString(num).length();
 		int[] reciprocal = new int[binary_num + 1];
 		long[] dp = new long[num + 1];
