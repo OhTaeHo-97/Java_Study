@@ -8,32 +8,27 @@ import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
 public class baekjun1074 {
-	public int getVisitNth(int size, int row, int col) {
-		int[][] mul = {{0, 1}, {2, 3}};
-		int s = (int)Math.pow(2, size - 1);
-		int r = row;
-		int c = col;
-		int remainder_r = row;
-		int remainder_c = col;
-		int num = 0;
-		int count = 0;
-		while(true) {
-			r = remainder_r / s;
-			c = remainder_c / s;
-			remainder_r = remainder_r % s;
-			remainder_c = remainder_c % s;
-			if(count == 0) {
-				num += (s * s) * mul[r][c] - 1;
-			} else {
-				num += (s * s) * mul[r][c];
-			}
-			count++;
-			if(s == 2) {
-				num -= (mul[1][1] - mul[remainder_c][remainder_r]);
-				return num;
-			}
-			s /= 2;
+	static int count = 0;
+	public void findNum(int size, int row, int col) {
+		if(size == 1)
+			return;
+		if(row < size / 2 && col < size / 2) {
+			findNum(size / 2, row, col);
+		} else if(row >= size / 2 && col < size / 2) {
+			count += (size * size / 4) * 2;
+			findNum(size / 2, row - size / 2, col);
+		} else if(row < size / 2 && col >= size / 2) {
+			count += size * size / 4;
+			findNum(size / 2, row, col - size / 2);
+		} else {
+			count += (size * size / 4) * 3;
+			findNum(size / 2, row - size / 2, col - size / 2);
 		}
+	}
+	
+	public void getVisitNth(int size, int row, int col) {
+		int n = (int)Math.pow(2, size);
+		findNum(n, row, col);
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -46,7 +41,8 @@ public class baekjun1074 {
 		int row = Integer.parseInt(st.nextToken());
 		int col = Integer.parseInt(st.nextToken());
 		baekjun1074 b = new baekjun1074();
-		bw.write(b.getVisitNth(size, row, col) + "\n");
+		b.getVisitNth(size, row, col);
+		bw.write(count + "\n");
 		bw.flush();
 		bw.close();
 	}
