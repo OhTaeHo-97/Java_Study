@@ -32,7 +32,7 @@ public class baekjun1038 {
 			findDecreaseNum(i, 1);
 		}
 		Collections.sort(list);
-		return -1;
+		return Integer.MAX_VALUE;
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -41,7 +41,7 @@ public class baekjun1038 {
 		int num = Integer.parseInt(br.readLine());
 		br.close();
 		baekjun1038 b = new baekjun1038();
-		if(b.getDecreasingNum(num) == -1) {
+		if(b.getDecreasingNum(num) == Integer.MAX_VALUE) {
 			bw.write(list.get(num) + "\n");
 		} else {
 			bw.write(b.getDecreasingNum(num) + "\n");
