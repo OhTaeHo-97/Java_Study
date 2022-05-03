@@ -8,22 +8,25 @@ import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
 public class baekjun1072 {
-	public int increaseWinningRate(int prev_total_game, int prev_win_game) {
-		int prev_winningRate = (int)((long)prev_win_game * 100) / prev_total_game;
-		int winningRate = 0;
-		int total_game = prev_total_game;
-		int win_game = prev_win_game;
-		int count = 0;
-		if(prev_winningRate == 100) {
+	public long increaseWinningRate(int prev_total_game, int prev_win_game) {
+		long prev_winningRate = (long)prev_win_game * 100 / prev_total_game;
+		if(prev_winningRate >= 99) {
 			return -1;
 		}
-		while(winningRate <= prev_winningRate) {
-			count++;
-			win_game++;
-			total_game++;
-			winningRate = (int)((long)win_game * 100) / total_game;
+		long winningRate = 0;
+		long start = 1;
+		long end = prev_total_game;
+		long mid = 0;
+		while(start <= end) {
+			mid = (start + end) / 2;
+			winningRate = (prev_win_game + mid) * 100 / (prev_total_game + mid);
+			if(winningRate > prev_winningRate) {
+				end = mid - 1;
+			} else {
+				start = mid + 1;
+			}
 		}
-		return count;
+		return start;
 	}
 	
 	public static void main(String[] args) throws IOException {
