@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
 
-public class baekjun2230_TwoPointer {
+public class baekjun2230 {
 	public int getMinDif(int dif, int[] series) {
 		Arrays.sort(series);
 		int left = 0;
@@ -39,7 +39,7 @@ public class baekjun2230_TwoPointer {
 			series[i] = Integer.parseInt(br.readLine());
 		}
 		br.close();
-		baekjun2230_TwoPointer b = new baekjun2230_TwoPointer();
+		baekjun2230 b = new baekjun2230();
 		bw.write(b.getMinDif(dif, series) + "\n");
 		bw.flush();
 		bw.close();
