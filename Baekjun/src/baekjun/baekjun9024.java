@@ -10,56 +10,31 @@ import java.util.Arrays;
 public class baekjun9024 {
 	public int getNearestDif(int dif, int[] nums) {
 		Arrays.sort(nums);
-		int count = 0;
+		int left = 0;
+		int right = nums.length - 1;
 		int near = Integer.MAX_VALUE;
-		for(int i = 0; i < nums.length - 1; i++) {
-			int start = 0;
-			int end = nums.length;
-			while(start < end) {
-				int mid = (start + end) / 2;
-				int sum = nums[i] + nums[mid];
-				System.out.println("near: " + near);
-				System.out.println("Start : " + start + ", end : " + end);
-				if(Math.abs(sum - dif) < Math.abs(near - dif)) {
-					near = sum;
-					count = 0;
-				}
-				if(sum >= dif) {
-					if(sum == near) {
-						count++;
-					}
-					end = mid;
-				} else {
-					start = mid + 1;
-				}
+		int count = 0;
+		while(true) {
+			int sum = nums[left] + nums[right];
+			if(Math.abs(sum - dif) == near) {
+				count++;
+			} else if(Math.abs(sum - dif) < near) {
+				count = 1;
+				near = Math.abs(sum - dif);
+			}
+			if(sum == dif) {
+				left++;
+				right--;
+			} else if(sum < dif) {
+				left++;
+			} else {
+				right--;
+			}
+			if(left >= right) {
+				break;
 			}
 		}
 		return count;
-//		Arrays.sort(nums);
-//		int left = 0;
-//		int right = 0;
-//		int near = Integer.MAX_VALUE;
-//		int count = 0;
-//		while(left <= right) {
-//			int difference = nums[left] + nums[right];
-//			if(Math.abs(difference - dif) < Math.abs(near - dif)) {
-//				near = difference;
-//				count = 0;
-//			}
-//			if(difference <= dif) {
-//				if(difference == near) {
-//					count++;
-//				}
-//				if(right == nums.length - 1) {
-//					left++;
-//				} else {
-//					right++;
-//				}
-//			} else {
-//				left++;
-//			}
-//		}
-//		return count;
 	}
 	
 	public static void main(String[] args) throws IOException {
