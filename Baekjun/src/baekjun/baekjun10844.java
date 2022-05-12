@@ -56,7 +56,7 @@ public class baekjun10844 {
 		for(int i = 1; i <= 9; i++) {
 			result += dp[num][i];
 		}
-		return result % 1000000000;
+		return result % divisor;
 	}
 	
 	public static void main(String[] args) throws IOException {
