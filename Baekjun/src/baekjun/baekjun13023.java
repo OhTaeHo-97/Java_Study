@@ -5,48 +5,35 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class baekjun13023 {
-	static int[][] relations;
-	boolean[][] visited;
-	Queue<Integer> candidate;
-	HashSet<Integer> relation;
-	boolean isRelation;
-	public void findRelation(int row, int col) {
-		visited[row][col] = true;
-		candidate.add(relations[row][col]);
-		relation.add(row);
-		if(relation.size() == 5) {
+	boolean isRelation = false;
+	public void findRelation(int start, ArrayList<ArrayList<Integer>> relations, boolean[] visited, int count) {
+		if(count == 5) {
 			isRelation = true;
+			return;
 		}
-		for(int i = 0; i < relations.length; i++) {
-			if(!visited[relations[row][col]][i] && relations[relations[row][col]][i] == 1) {
-				findRelation(relations[row][col], i);
+		visited[start] = true;
+		for(int i : relations.get(start)) {
+			if(!visited[i]) {
+				findRelation(i, relations, visited, count + 1);
+			}
+			if(isRelation) {
+				return;
 			}
 		}
+		visited[start] = false; // 일직선이 아닐 경우, 방문한 지점은 모두 false 처리
 	}
 	
-	public int getRelationNum() {
-		for(int l = 0; l < relations.length; l++) {
-			Queue<Integer> q = new LinkedList<Integer>();
-			for(int i = 0; i < relations[l].length; i++) {
-				if(relations[l][i] == 1) {
-					q.add(i);
-				}
-			}
-			for(int i = 0; i < q.size(); i++) {
-				candidate = new LinkedList<Integer>();
-				relation = new HashSet<Integer>();
-				visited = new boolean[relations.length][relations[0].length];
-				isRelation = false;
-				findRelation(l, i);
-				if(isRelation) {
-					return 1;
-				}
-				System.out.println(relation);
+	public int getRelationNum(int people_num, ArrayList<ArrayList<Integer>> relations) {
+		boolean[] visited = new boolean[people_num];
+		for(int i = 0; i < people_num; i++) {
+			Arrays.fill(visited, false);
+			findRelation(i, relations, visited, 1);
+			if(isRelation) {
+				return 1;
 			}
 		}
 		return 0;
@@ -58,14 +45,18 @@ public class baekjun13023 {
 		String[] input = br.readLine().split(" ");
 		int people_num = Integer.parseInt(input[0]);
 		int relation_num = Integer.parseInt(input[1]);
-		relations = new int[people_num][people_num];
+		ArrayList<ArrayList<Integer>> relations = new ArrayList<ArrayList<Integer>>();
+		for(int i = 0; i < people_num; i++) {
+			relations.add(new ArrayList<Integer>());
+		}
 		for(int i = 0; i < relation_num; i++) {
 			input = br.readLine().split(" ");
-			relations[Integer.parseInt(input[0])][Integer.parseInt(input[1])] = 1;
+			relations.get(Integer.parseInt(input[0])).add(Integer.parseInt(input[1]));
+			relations.get(Integer.parseInt(input[1])).add(Integer.parseInt(input[0]));
 		}
 		br.close();
 		baekjun13023 b = new baekjun13023();
-		bw.write(b.getRelationNum() + "\n");
+		bw.write(b.getRelationNum(people_num, relations) + "\n");
 		bw.flush();
 		bw.close();
 	}
