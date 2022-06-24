@@ -1,145 +1,95 @@
 package baekjun;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.StringTokenizer;
 
 public class baekjun2147 {
+	static int A, B, N, M;
 	static int[][] map;
-	static char[] direction;
-	static ArrayList<String> commands;
-	public String simulate(HashMap<Integer, Point> location) {
-		for(int i = 0; i < commands.size(); i++) {
-			String command = commands.get(i);
-			String[] input = command.split(" ");
-			int robot = Integer.parseInt(input[0]);
-			char c = input[1].charAt(0);
-			int repeat_num = Integer.parseInt(input[2]);
-			Point cur_location = location.get(robot);
-			int x = cur_location.x;
-			int y = cur_location.y;
-			switch(direction[robot]) {
-				case 'E':
-					if(c == 'F') {
-						y += repeat_num;
-					} else if(c == 'R') {
-						direction[robot] = 'S';
-					} else if(c == 'L') {
-						direction[robot] = 'N';
-					}
-					break;
-				case 'W':
-					if(c == 'F') {
-						y -= repeat_num;
-					} else if(c == 'R') {
-						direction[robot] = 'N';
-					} else if(c == 'L') {
-						direction[robot] = 'S';
-					}
-					break;
-				case 'N':
-					if(c == 'F') {
-						x -= repeat_num;
-					} else if(c == 'R') {
-						direction[robot] = 'R';
-					} else if(c == 'L') {
-						direction[robot] = 'L';
-					}
-					break;
-				case 'S':
-					if(c == 'F') {
-						x += repeat_num;
-					} else if(c == 'R') {
-						direction[robot] = 'W';
-					} else if(c == 'L') {
-						direction[robot] = 'E';
-					}
-					break;
-				default:
-					break;
-			}
-			int prev_x = cur_location.x;
-			int prev_y = cur_location.y;
-			if(prev_x == x) {
-				for(int j = 1; j < direction.length; j++) {
-					if(j == robot)
-						continue;
-					int jth_x = location.get(j).x;
-					int jth_y = location.get(j).y;
-					if(jth_x != x) {
-						continue;
-					}
-					int max = Math.max(prev_y, y);
-					int min = Math.min(prev_y, y);
-					if(jth_y >= min && jth_y <= max) {
-						return "Robot " + robot + " crashes into robot " + j;
-					}
-					
-				}
-			} else if(prev_y == y) {
-				for(int j = 1; j < direction.length; j++) {
-					if(j == robot)
-						continue;
-					int jth_x = location.get(j).x;
-					int jth_y = location.get(j).y;
-					if(jth_y != y) {
-						continue;
-					}
-					int max = Math.max(prev_x, x);
-					int min = Math.min(prev_x, x);
-					if(jth_x >= min && jth_x <= max) {
-						return "Robot " + robot + " crashes into robot " + j;
-					}
-				}
-			}
-			if(x < 0 || x >= map.length || y < 0 || y >= map[0].length) {
-				return "Robot " + robot + " crashes into the wall";
-			}
-			location.put(robot, new Point(x, y));
+	static int[] dir = {0, 1, 2, 3};
+	static int[] dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};
+	static Robot[] robots;
+	
+	static class Robot {
+		int x, y, dir;
+		public Robot(int x, int y, int dir) {
+			super();
+			this.x = x;
+			this.y = y;
+			this.dir = dir;
 		}
-		return "OK";
 	}
 	
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		String[] input = br.readLine().split(" ");
-		int col = Integer.parseInt(input[0]);
-		int row = Integer.parseInt(input[1]);
-		map = new int[row][col];
-		input = br.readLine().split(" ");
-		int robot_num = Integer.parseInt(input[0]);
-		int command_num = Integer.parseInt(input[1]);
-		direction = new char[robot_num + 1];
-		commands = new ArrayList<String>();
-		HashMap<Integer, Point> location = new HashMap<>();
-		for(int i = 1; i <= robot_num; i++) {
-			input = br.readLine().split(" ");
-			int y = Integer.parseInt(input[0]) - 1;
-			int x = row - Integer.parseInt(input[1]);
-			direction[i] = input[2].charAt(0);
-			location.put(i, new Point(x, y));
-			map[x][y] = i;
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		A = Integer.parseInt(st.nextToken());
+		B = Integer.parseInt(st.nextToken());
+		map = new int[B][A];
+		st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		robots = new Robot[N + 1];
+		for(int i = 1; i <= N; i++) {
+			st = new StringTokenizer(br.readLine());
+			int b = Integer.parseInt(st.nextToken());
+			int a = Integer.parseInt(st.nextToken());
+			char tmp = st.nextToken().charAt(0);
+			int d = 0;
+			if(tmp == 'N') {
+				d = 2;
+			} else if(tmp == 'E') {
+				d = 1;
+			} else if(tmp == 'S') {
+				d = 0;
+			} else {
+				d = 3;
+			}
+			map[a][b] = 1;
+			robots[i] = new Robot(a, b, d);
 		}
-		for(int i = 0; i < command_num; i++) {
-			commands.add(br.readLine());
+		
+		String res = "";
+		for(int i = 0; i < M; i++) {
+			st = new StringTokenizer(br.readLine());
+			int a = Integer.parseInt(st.nextToken());
+			char m = st.nextToken().charAt(0);
+			int g = Integer.parseInt(st.nextToken());
+			res = go(a, m, g);
+			if(!res.equals("OK")) {
+				System.out.println(res);
+				break;
+			}
 		}
-		br.close();
-		baekjun2147 b = new baekjun2147();
-		bw.write(b.simulate(location) + "\n");
-		bw.flush();
-		bw.close();
+		if(res.equals("OK")) {
+			System.out.println(res);
+		}
 	}
 	
-	public static class Point {
-		int x, y;
-		public Point(int x, int y) {
-			this.x = x;
-			this.y = y;
+	private static String go(int n, char motion, int move) {
+		Robot now = robots[n];
+		if(motion == 'L') {
+			robots[n].dir = (now.dir + move) % 4;
+		} else if(motion == 'R') {
+			robots[n].dir = (now.dir + move * 3) % 4;
+		} else {
+			int xx = now.x, yy = now.y;
+			for(int i = 0; i < move; i++) {
+				xx += dx[now.dir];
+				yy += dy[now.dir];
+				if(xx < 0 || xx >= B || yy < 0 || yy >= A) {
+					return "Robot " + n + " crashes into the wall";
+				}
+				if(map[xx][yy] != 0) {
+					return "Robot " + n + " crashes into robot " + map[xx][yy];
+				}
+			}
+			robots[n] = new Robot(xx, yy, now.dir);
+			map[now.x][now.y] = 0;
+			map[xx][yy] = n;
 		}
+		return "OK";
 	}
 }
