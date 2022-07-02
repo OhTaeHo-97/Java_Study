@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-public class baekjun2147 {
+public class baekjun2174 {
 	static int A, B, N, M;
 	static int[][] map;
 	static int[] dir = {0, 1, 2, 3};
