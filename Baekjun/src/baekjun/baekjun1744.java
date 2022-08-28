@@ -3,54 +3,40 @@ package baekjun;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.StringTokenizer;
 
 public class baekjun1744 {
 	static int N;
-	static Integer[][] seq;
+	static ArrayList<Integer> positive, negative;
 	static void input() {
 		Reader scanner = new Reader();
 		N = scanner.nextInt();
-		seq = new Integer[3][N];
-		int[] idx = new int[3];
+		positive = new ArrayList<Integer>();
+		negative = new ArrayList<Integer>();
 		for(int i = 0; i < N; i++) {
 			int temp = scanner.nextInt();
-			if(temp > 0) {
-				seq[0][idx[0]] = temp;
-				idx[0]++;
-			} else if(temp < 0) {
-				seq[0][idx[2]] = temp;
-				idx[2]++;
-			} else {
-				seq[0][idx[1]] = temp;
-				idx[1]++;
-			}
+			if(temp > 0) positive.add(temp);
+			else negative.add(temp);
 		}
 	}
 	
 	static void solution() {
-		if(N == 1) {
-			System.out.println();
+		Collections.sort(positive, Collections.reverseOrder());
+		Collections.sort(negative);
+		int total = 0, idx = 0;
+		while(idx < positive.size()) {
+			if(idx + 1 < positive.size() && positive.get(idx) != 1 && positive.get(idx + 1) != 1)
+				total += positive.get(idx++) * positive.get(idx++);
+			else total += positive.get(idx++);
 		}
-		Arrays.sort(seq[0], Collections.reverseOrder());
-		Arrays.sort(seq[2]);
-		int total = 0;
-		for(int i = 0; i < seq[0].length - 2; i += 2) {
-			if(seq[0][i] == 1) {
-				i--;
-				total += 1;
-			} else if(seq[0][i + 1] == 1) {
-				total += seq[0][i] + 1;
-			} else {
-				total += seq[0][i] * seq[0][i + 1];
-			}
-		}
-		if(seq[2].length % 2 == 0) {
-			for(int i = 0; i < seq[2].length - 2; i += 2) total += seq[2][i] * seq[2][i + 1];
-		} else {
-			for(int i = 0; i < seq[2].length - 3; i += 2) total += seq[2][i] * seq[2][i + 1];
+		idx = 0;
+		boolean flag = true;
+		while(idx < negative.size()) {
+			if(idx + 1 < negative.size()) total += negative.get(idx++) * negative.get(idx++);
+			else total += negative.get(idx++);
 		}
 		System.out.println(total);
 	}
