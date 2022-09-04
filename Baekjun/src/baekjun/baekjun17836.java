@@ -50,11 +50,12 @@ public class baekjun17836 {
 							queue.offer(new Point(cx, cy, cur_point.time + 1, cur_point.hasGram));
 							visited[cx][cy][1] = true;
 						}
-					} else if(map[cx][cy] == 2) {
+					} else if(map[cx][cy] == 2 && !visited[cx][cy][0] && !visited[cx][cy][1]) {
 						queue.offer(new Point(cx, cy, cur_point.time + 1, true));
+						visited[cx][cy][0] = true;
 						visited[cx][cy][1] = true;
 					} else if(map[cx][cy] == 1) {
-						if(cur_point.hasGram) {							
+						if(cur_point.hasGram && !visited[cx][cy][1]) {							
 							queue.offer(new Point(cx, cy, cur_point.time + 1, cur_point.hasGram));
 							visited[cx][cy][1] = true;
 						}
