@@ -4,68 +4,44 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class baekjun1967 {
 	static int n, max = Integer.MIN_VALUE;
-	static HashMap<Integer, ArrayList<Edge>> map;
-	static ArrayList<Integer> leafs;
+	static ArrayList<Edge>[] map;
+	static boolean[] visited;
 	static void input() {
 		Reader scanner = new Reader();
 		n = scanner.nextInt();
-		map = new HashMap<>();
-		for(int vertex = 1; vertex <= n; vertex++) map.put(vertex, new ArrayList<Edge>());
-		leafs = new ArrayList<Integer>();
+		map = new ArrayList[n + 1];
+		for(int i = 1; i <= n; i++) map[i] = new ArrayList<Edge>();
+		visited = new boolean[n + 1];
 		for(int edge = 0; edge < n - 1; edge++) {
 			int parent = scanner.nextInt();
 			int child = scanner.nextInt();
 			int weight = scanner.nextInt();
-			map.get(parent).add(new Edge(child, weight));
-			map.get(child).add(new Edge(parent, weight));
-		}
-		for(int vertex = 1; vertex <= n; vertex++) {
-			if(map.get(vertex).size() == 1 && vertex != 1) leafs.add(vertex);
+			map[parent].add(new Edge(child, weight));
+			map[child].add(new Edge(parent, weight));
 		}
 	}
 	
 	static void solution() {
-		for(int index = 0; index < leafs.size(); index++) {
-			int weight = dijkstra(leafs.get(index));
-			max = Math.max(max, weight);
+		for(int i = 1; i <= n; i++) {
+			visited = new boolean[n + 1];
+			visited[i] = true;
+			dfs(i, 0);
 		}
 		System.out.println(max);
 	}
 	
-	static int dijkstra(int vertex) {
-		boolean[] visited = new boolean[n + 1];
-		int[] distance = new int[n + 1];
-		Arrays.fill(distance, Integer.MAX_VALUE);
-		Queue<Edge> queue = new LinkedList<Edge>();
-		distance[vertex] = 0;
-		visited[vertex] = true;
-		queue.add(new Edge(vertex, 0));
-		while(!queue.isEmpty()) {
-			Edge cur_edge = queue.poll();
-			if(distance[cur_edge.vertex] < cur_edge.weight) continue;
-			for(Edge e : map.get(cur_edge.vertex)) {
-				int next_vertex = e.vertex;
-				int weight = e.weight;
-				if(distance[next_vertex] > distance[cur_edge.vertex] + weight) {
-					distance[next_vertex] = distance[cur_edge.vertex] + weight;
-					queue.offer(new Edge(next_vertex, distance[next_vertex]));
-				}
+	static void dfs(int num, int weight) {
+		for(Edge e : map[num]) {
+			if(!visited[e.vertex]) {
+				visited[e.vertex] = true;
+				dfs(e.vertex, weight + e.weight);
 			}
 		}
-		int max_weight = 0;
-		for(int v = 1; v <= n; v++) {
-			if(v == vertex) continue;
-			max_weight = Math.max(max_weight, distance[v]);
-		}
-		return max_weight;
+		max = Math.max(max, weight);
 	}
 	
 	public static void main(String[] args) {
