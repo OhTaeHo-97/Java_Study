@@ -2,8 +2,6 @@ package programmers;
 
 import java.util.*;
 
-import programmers.exercise.Point;
-
 public class Level3_FindPairCard {
 //	static HashMap<Integer, Point[]> cardLoc;
 //	public static int solution(int[][] board, int r, int c) {
