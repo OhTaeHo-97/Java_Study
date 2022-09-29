@@ -5,10 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
@@ -33,7 +31,7 @@ public class baekjun1238 {
 	static void solution() {
 		int[][] distances = new int[N + 1][N + 1];
 		for(int vertex = 1; vertex <= N; vertex++) {
-			dijkstra(distances[vertex]);
+			dijkstra(vertex, distances[vertex]);
 		}
 		int max = Integer.MIN_VALUE;
 		for(int vertex = 1; vertex <= N; vertex++) {
@@ -64,11 +62,28 @@ public class baekjun1238 {
 //		return distance;
 //	}
 	
-	static void dijkstra(int[] distance) {
-		PriorityQueue<Edge> queue = new PriorityQueue<Edge>();
-		queue.offer(new Edge(X, 0));
+//	static void dijkstra(int start, int[] distance) {
+//		PriorityQueue<Edge> queue = new PriorityQueue<Edge>();
+//		queue.offer(new Edge(start, 0));
+//		Arrays.fill(distance, Integer.MAX_VALUE);
+//		distance[start] = 0;
+//		while(!queue.isEmpty()) {
+//			Edge curEdge = queue.poll();
+//			if(distance[curEdge.vertex] < curEdge.weight) continue;
+//			for(Edge e : map.get(curEdge.vertex)) {
+//				if(distance[e.vertex] > e.weight + distance[curEdge.vertex]) {
+//					distance[e.vertex] = e.weight + distance[curEdge.vertex];
+//					queue.offer(new Edge(e.vertex, distance[e.vertex]));
+//				}
+//			}
+//		}
+//	}
+	
+	static void dijkstra(int start, int[] distance) {
+		Queue<Edge> queue = new LinkedList<Edge>();
+		queue.offer(new Edge(start, 0));
 		Arrays.fill(distance, Integer.MAX_VALUE);
-		distance[X] = 0;
+		distance[start] = 0;
 		while(!queue.isEmpty()) {
 			Edge curEdge = queue.poll();
 			if(distance[curEdge.vertex] < curEdge.weight) continue;
@@ -107,17 +122,17 @@ public class baekjun1238 {
 		}
 	}
 	
-	static class Edge implements Comparator<Edge> {
+	static class Edge implements Comparable<Edge> {
 		int vertex, weight;
 		public Edge(int vertex, int weight) {
 			this.vertex = vertex;
 			this.weight = weight;
 		}
-		public int compare(Edge e1, Edge e2) {
-			if(e1.weight != e2.weight) {
-				return e1.weight - e2.weight;
+		public int compareTo(Edge e) {
+			if(this.weight != e.weight) {
+				return this.weight - e.weight;
 			} else {
-				return e1.vertex - e2.vertex;
+				return this.vertex - e.vertex;
 			}
 		}
 	}
