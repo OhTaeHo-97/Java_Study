@@ -1,6 +1,6 @@
 package programmers;
 
-public class Level3_LockAndLock {
+public class Level3_LockAndKey {
 	public static boolean solution(int[][] key, int[][] lock) {
 		int kLen = key.length, lLen = lock.length;
 		int len = kLen * 2 + lLen - 2;
