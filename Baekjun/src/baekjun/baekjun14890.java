@@ -26,7 +26,7 @@ public class baekjun14890 {
 			if(isRoad(row)) {
 				answer++;
 			} else {
-				if(checkDown(row)) answer++;
+				if(checkColumns(row)) answer++;
 			}
 		}
 		
@@ -40,7 +40,7 @@ public class baekjun14890 {
 		return true;
 	}
 	
-	static boolean checkDown(int row) {
+	static boolean checkColumns(int row) {
 		int num = map[row][0];
 		for(int col = 1; col < N; col++) {
 			if(num == map[row][col]) continue;
@@ -75,8 +75,44 @@ public class baekjun14890 {
 		return true;
 	}
 	
+	static boolean checkRows(int col) {
+		int num = map[0][col];
+		for(int row = 1; row < N; row++) {
+			if(num == map[row][col]) continue;
+			if(num > map[row][col]) { // 높이가 낮아졌을 때
+				if(map[row][col] < num - 1) return false;
+				if(col + L - 1 >= N) return false;
+				num = map[row][col];
+				for(int col2 = col; col2 <= col + L - 1; col2++) {
+					if(slopeWay[row][col2]) return false;
+					slopeWay[row][col2] = true;
+					if(num != map[row][col2]) {
+						for(int col3 = col; col3 <= col + L - 1; col3++)
+							slopeWay[row][col3] = false;
+						return false;
+					}
+				}
+			} else if(num < map[row][col]) { // 높이가 높아졌을 때
+				if(map[row][col] > num + 1) return false;
+				if(col - L < 0) return false;
+				for(int col2 = col - L; col2 < col; col2++) {
+					if(slopeWay[row][col2]) return false;
+					slopeWay[row][col2] = true;
+					if(num != map[row][col2]) {
+						for(int col3 = col - L; col3 < col; col3++)
+							slopeWay[row][col3] = false;
+						return false;
+					}
+				}
+				num = map[row][col];
+			}
+		}
+		return true;
+	}
+	
 	public static void main(String[] args) {
-		
+		input();
+		solution();
 	}
 	
 	static class Reader {
