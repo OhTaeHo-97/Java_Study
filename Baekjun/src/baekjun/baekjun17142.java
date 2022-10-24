@@ -26,7 +26,6 @@ public class baekjun17142 {
 				map[row][col] = scanner.nextInt();
 				if(map[row][col] == 0) emptyNum++;
 				else if(map[row][col] == 2) viruses.add(new Point(row, col, 0));
-				
 			}
 		}
 	}
@@ -60,7 +59,10 @@ public class baekjun17142 {
 	static void bfs(int[][] copy) {
 		Queue<Point> queue = new LinkedList<Point>();
 		boolean[][] visited = new boolean[N][N];
-		for(Point p : active) queue.offer(p);
+		for(Point p : active) {
+			copy[p.x][p.y] = 3; 
+			queue.offer(p);
+		}
 		int num = emptyNum;
 		int[] dx = {-1, 0, 1, 0}, dy = {0, -1, 0, 1};
 		while(!queue.isEmpty()) {
@@ -68,10 +70,10 @@ public class baekjun17142 {
 			for(int dir = 0; dir < 4; dir++) {
 				int cx = cur.x + dx[dir], cy = cur.y + dy[dir];
 				if(cx >= 0 && cx < N && cy >= 0 && cy < N && !visited[cx][cy]) {
-					if(copy[cx][cy] == 0) {
-						num--;
+					if(copy[cx][cy] == 0) num--;
+					if(copy[cx][cy] == 0 || copy[cx][cy] == 2) {
 						visited[cx][cy] = true;
-						copy[cx][cy] = 2;
+						copy[cx][cy] = 3;
 						queue.offer(new Point(cx, cy, cur.time + 1));
 					}
 				}
