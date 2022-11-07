@@ -45,6 +45,7 @@ public class baekjun17471 {
 		for(int area = start; area <= N; area++) {
 			list.add(area);
 			makeList(area + 1, size - 1, list);
+			list.remove(list.size() - 1);
 		}
 	}
 	
