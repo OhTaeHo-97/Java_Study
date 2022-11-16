@@ -1,4 +1,4 @@
-package programmers;
+package programmers.kakaoBlindRecruiment2021;
 
 import java.util.*;
 
