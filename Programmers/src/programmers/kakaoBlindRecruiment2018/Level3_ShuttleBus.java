@@ -11,79 +11,58 @@ public class Level3_ShuttleBus {
 	
 	static HashMap<Time, ArrayList<Time>> crewList;
 	public static String solution(int n, int t, int m, String[] timetable) {
-		Time[] timeList = new Time[n];
-		crewList = new HashMap<>();
-		int hour = 9, minute = 0;
-		for(int count = 0; count < n; count++) {
-			crewList.put(new Time(hour, minute), new ArrayList<>());
-			timeList[count] = new Time(hour, minute);
-			minute += t;
-			if(minute >= 60) {
-				minute %= 60;
-				hour += (minute / 60);
+		Time[] timeList = new Time[timetable.length];
+		for(int idx = 0; idx < timetable.length; idx++) timeList[idx] = strToTime(timetable[idx]);
+		Arrays.sort(timeList, (t1, t2) -> (t1.hour != t2.hour) ? t1.hour - t2.hour : t1.minute - t2.minute);
+		int limit = m, index = 0;
+		Time answer = new Time(9, 0);
+		for(int hour = 9, min = 0, count = 0; count < n; min += t, count++) {
+			if(min >= 60) {
+				hour += min / 60;
+				min %= 60;
 			}
-		}
-		for(String time : timetable) {
-			String[] timeArr = time.split(":");
-			hour = Integer.parseInt(timeArr[0]);
-			minute = Integer.parseInt(timeArr[1]);
-			for(Time key : timeList) {
-				int keyHour = key.hour, keyMin = key.minute;
-				if(hour > keyHour) {
-					crewList.get(key).add(new Time(keyHour, keyMin));
-					break;
-				} else if(hour == keyHour) {
-					if(minute >= keyMin) {
-						crewList.get(key).add(new Time(keyHour, keyMin));
-						break;
+			int tempIdx = index;
+			for(int idx = tempIdx; idx < timeList.length; idx++) {
+				if(limit == 0) break;
+				Time temp = timeList[idx];
+				if(temp.hour < hour) {
+					index = idx + 1;
+					limit--;
+				}
+				else if(temp.hour == hour) {
+					if(temp.minute <= min) {
+						index = idx + 1;
+						limit--;
 					}
 				}
 			}
-		}
-		Time answer = new Time(0, 0);
-		if(n == 1) {
-			for(Time key : crewList.keySet()) {
-				int size = crewList.get(key).size();
-				if(size == 0) answer = new Time(9, 0);
-				else if(size >= m) {
-					Time temp = crewList.get(key).get(m - 1);
+			if(count == n - 1) {
+				if(limit != 0) {
+					answer = new Time(hour, min);
+					break;
+				} else {
+					Time temp = timeList[index - 1];
 					if(temp.minute == 0) answer = new Time(temp.hour - 1, 59);
 					else answer = new Time(temp.hour, temp.minute - 1);
-				}
-			}
-		} else {			
-			for(int idx = 0; idx < timeList.length; idx++) {
-				int size = crewList.get(timeList[idx]).size();
-				Collections.sort(crewList.get(timeList[idx]), (t1, t2) -> (t1.hour != t2.hour) ? t1.hour - t2.hour : t1.minute - t2.minute);
-				if(idx == timeList.length - 1 && m > 0) {
-					answer = timeList[idx];
 					break;
 				}
-				if(m <= size) {
-					Time temp = crewList.get(timeList[idx]).get(m - 1);
-					if(temp.minute == 0) {
-						answer = new Time(temp.hour - 1, 59);
-						break;
-					} else {
-						answer = new Time(temp.hour, temp.minute - 1);
-						break;
-					}
-				}
 			}
+			limit = m;
 		}
-		String h = Integer.toString(answer.hour);
-		String min = Integer.toString(answer.minute);
-		if(h.length() == 1) h = "0" + h;
-		if(min.length() == 1) min = "0" + min;
-		return (h + ":" + min);
+		return timeToStr(answer);
 	}
 	
-	public static void main(String[] args) {
-//		int n = 1, t = 1, m = 5;
-//		String[] timetable = {"08:00", "08:01", "08:02", "08:03"};
-		int n = 2, t = 10, m = 2;
-		String[] timetable = {"09:10", "09:09", "08:00"};
-		System.out.println(solution(n, t, m, timetable));
+	static Time strToTime(String time) {
+		String[] t = time.split(":");
+		int hour = Integer.parseInt(t[0]), min = Integer.parseInt(t[1]);
+		return new Time(hour, min);
+	}
+	
+	static String timeToStr(Time time) {
+		String hour = Integer.toString(time.hour), min = Integer.toString(time.minute);
+		if(hour.length() == 1) hour = "0" + hour;
+		if(min.length() == 1) min = "0" + min;
+		return (hour + ":" + min);
 	}
 	
 	static class Time {
@@ -102,5 +81,21 @@ public class Level3_ShuttleBus {
 		public int hashCode() {
 			return Objects.hash(hour, minute);
 		}
+	}
+	
+	public static void main(String[] args) {
+//		int n = 1, t = 1, m = 5;
+//		String[] timetable = {"08:00", "08:01", "08:02", "08:03"};
+//		int n = 2, t = 10, m = 2;
+//		String[] timetable = {"09:10", "09:09", "08:00"};
+		int n = 2, t = 1, m = 2;
+		String[] timetable = {"09:00", "09:00", "09:00", "09:00"};
+//		int n = 1, t = 1, m = 5;
+//		String[] timetable = {"00:01", "00:01", "00:01", "00:01", "00:01"};
+//		int n = 1, t = 1, m = 1;
+//		String[] timetable = {"23:59"};
+//		int n = 10, t = 60, m = 45;
+//		String[] timetable = {"23:59","23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59"};
+		System.out.println(solution(n, t, m, timetable));
 	}
 }
