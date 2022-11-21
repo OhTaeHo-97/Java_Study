@@ -20,65 +20,165 @@ public class Level3_findRouteGame {
 	// 0 <= 모든 노드의 좌표값 <= 100,000
 	// 트리의 깊이 <= 1,000
 	
-	static int idx;
-	static int[][] result;
+//	static int idx;
+//	static int[][] result;
+//	public static int[][] solution(int[][] nodeinfo) {
+//		Node[] nodes = new Node[nodeinfo.length];
+//		for(int index = 0; index < nodeinfo.length; index++)
+//			nodes[index] = new Node(nodeinfo[index][0], nodeinfo[index][1], index + 1, null, null);
+//		Arrays.sort(nodes, new Comparator<Node>() {
+//			public int compare(Node n1, Node n2) {
+//				if(n1.y != n2.y) return n2.y - n1.y;
+//				else return n1.x - n2.x;
+//			}
+//		});
+//		
+//		Node root = nodes[0];
+//		for(int index = 1; index < nodes.length; index++)
+//			insertNode(root, nodes[index]);
+//		result = new int[2][nodes.length];
+//		idx = 0;
+//		preorder(root);
+//		idx = 0;
+//		postorder(root);
+//		return result;
+//	}
+//	
+//	static void insertNode(Node parent, Node child) {
+//		if(parent.x > child.x) {
+//			if(parent.left == null) parent.left = child;
+//			else insertNode(parent.left, child);
+//		} else {
+//			if(parent.right == null) parent.right = child;
+//			else insertNode(parent.right, child);
+//		}
+//	}
+//	
+//	static void preorder(Node root) {
+//		if(root != null) {
+//			result[0][idx++] = root.idx;
+//			preorder(root.left);
+//			preorder(root.right);
+//		}
+//	}
+//	
+//	static void postorder(Node root) {
+//		if(root != null) {
+//			postorder(root.left);
+//			postorder(root.right);
+//			result[1][idx++] = root.idx;
+//		}
+//	}
+//	
+//	static class Node {
+//		int x, y, idx;
+//		Node left, right;
+//		public Node(int x, int y, int idx, Node left, Node right) {
+//			this.x = x;
+//			this.y = y;
+//			this.idx = idx;
+//			this.left = left;
+//			this.right = right;
+//		}
+//	}
+	
 	public static int[][] solution(int[][] nodeinfo) {
 		Node[] nodes = new Node[nodeinfo.length];
 		for(int index = 0; index < nodeinfo.length; index++)
-			nodes[index] = new Node(nodeinfo[index][0], nodeinfo[index][1], index + 1, null, null);
+			nodes[index] = new Node(nodeinfo[index][0], nodeinfo[index][1], index + 1);
 		Arrays.sort(nodes, new Comparator<Node>() {
 			public int compare(Node n1, Node n2) {
 				if(n1.y != n2.y) return n2.y - n1.y;
 				else return n1.x - n2.x;
 			}
 		});
-		
-		Node root = nodes[0];
+		Tree tree = new Tree(nodes[0].x, nodes[0].y, nodes[0].idx);
 		for(int index = 1; index < nodes.length; index++)
-			insertNode(root, nodes[index]);
-		result = new int[2][nodes.length];
-		idx = 0;
-		preorder(root);
-		idx = 0;
-		postorder(root);
+			tree.add(nodes[index].x, nodes[index].y, nodes[index].idx);
+		int[][] result = tree.traversalResult();
 		return result;
-	}
-	
-	static void insertNode(Node parent, Node child) {
-		if(parent.x > child.x) {
-			if(parent.left == null) parent.left = child;
-			else insertNode(parent.left, child);
-		} else {
-			if(parent.right == null) parent.right = child;
-			else insertNode(parent.right, child);
-		}
-	}
-	
-	static void preorder(Node root) {
-		if(root != null) {
-			result[0][idx++] = root.idx;
-			preorder(root.left);
-			preorder(root.right);
-		}
-	}
-	
-	static void postorder(Node root) {
-		if(root != null) {
-			postorder(root.left);
-			postorder(root.right);
-			result[1][idx++] = root.idx;
-		}
 	}
 	
 	static class Node {
 		int x, y, idx;
-		Node left, right;
-		public Node(int x, int y, int idx, Node left, Node right) {
+		public Node(int x, int y, int idx) {
 			this.x = x;
 			this.y = y;
 			this.idx = idx;
-			this.left = left;
-			this.right = right;
+		}
+	}
+	
+	static class Tree {
+		Node root;
+		Tree left, right;
+		int size;
+		public Tree(int x, int y, int idx) {
+			root = new Node(x, y, idx);
+			left = right = null;
+			size = 1;
+		}
+		public void add(int x, int y, int idx) {
+			Tree temp = null, prev = null;
+			if(root.x > x && root.y > y) {
+				if(left == null) {
+					left = new Tree(x, y, idx);
+					size++;
+					return;
+				} else temp = left;
+			} else {
+				if(right == null) {
+					right = new Tree(x, y, idx);
+					size++;
+					return;
+				} else temp = right;
+			}
+			boolean isRight = false;
+			while(temp != null) {
+				if(temp.root.x > x && temp.root.y > y) {
+					prev = temp;
+					temp = temp.left;
+					isRight = false;
+				}
+				else if(temp.root.x < x && temp.root.y > y) {
+					prev = temp;
+					temp = temp.right;
+					isRight = true;
+				}
+			}
+			if(!isRight) prev.left = new Tree(x, y, idx);
+			if(isRight) prev.right = new Tree(x, y, idx);
+			size++;
+		}
+		int idx;
+		public int[][] traversalResult() {
+			int[][] result = new int[2][size];
+			preorderTraversal(result[0]);
+			postorderTraversal(result[1]);
+			return result;
+		}
+		public void preorderTraversal(int[] preorderArr) {
+			preorderArr[0] = root.idx;
+			idx = 1;
+			preorder(left, preorderArr);
+			preorder(right, preorderArr);
+		}
+		public void preorder(Tree t, int[] preorderArr) {
+			if(t == null) return;
+			preorderArr[idx++] = t.root.idx;
+			preorder(t.left, preorderArr);
+			preorder(t.right, preorderArr);
+		}
+		public void postorderTraversal(int[] postorderArr) {
+			idx = 0;
+			postorder(left, postorderArr);
+			postorder(right, postorderArr);
+			postorderArr[idx] = root.idx;
+		}
+		public void postorder(Tree t, int[] postorderArr) {
+			if(t == null) return;
+			postorder(t.left, postorderArr);
+			postorder(t.right, postorderArr);
+			postorderArr[idx++] = t.root.idx;
 		}
 	}
 	
