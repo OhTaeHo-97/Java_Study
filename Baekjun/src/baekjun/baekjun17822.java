@@ -35,19 +35,9 @@ public class baekjun17822 {
             boolean[][] visited = new boolean[N + 1][M];
             rotate(rotatePlates, di[count], ki[count]);
             remove();
-            print();
-            System.out.println();
         }
         int answer = sumNums();
         System.out.println(answer);
-    }
-
-    static void print() {
-        for(int plate = 1; plate <= N; plate++) {
-            for(int idx = 0; idx < M; idx++)
-                System.out.print(plates[plate][idx] + " ");
-            System.out.println();
-        }
     }
 
     static int[] getRotatePlates(int n) {
@@ -72,24 +62,22 @@ public class baekjun17822 {
 
     static void remove() {
         boolean isChanged = false;
+        boolean[][] visited = new boolean[N + 1][M];
         for(int plate = 1; plate <= N; plate++) {
-            boolean[][] visited = new boolean[N + 1][M];
-            if(!findSameInSamePlate(plate, visited) &&
-                    !findSameInNeighborPlate(plate, visited)) {
+            boolean c1 = findSameInSamePlate(plate, visited);
+            boolean c2 = findSameInNeighborPlate(plate, visited);
+            if(!c1 && !c2) {
                 continue;
             }
             isChanged = true;
-            removeSames(visited);
         }
-        if(!isChanged) changeNums();
+        if(isChanged) removeSames(visited);
+        else changeNums();
     }
 
     static void changeNums() {
         int sum = sumNums();
-        System.out.println(sum);
-        System.out.println(platesNumCount);
         double avg = (double)sum / platesNumCount;
-        System.out.println(avg);
         adjust(avg);
     }
 
