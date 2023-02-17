@@ -30,7 +30,14 @@ public class baekjun7453 {
         int[] AB = new int[n * n], CD = new int[n * n];
 
         getSequenceSum(A, B, C, D, AB, CD);
+
+        Arrays.sort(AB);
         Arrays.sort(CD);
+
+        for(int idx = 0; idx < AB.length; idx++) {
+            System.out.println("AB[" + idx + "] = " + AB[idx]);
+            System.out.println("CD[" + idx + "] = " + CD[idx]);
+        }
 
         long answer = 0L;
 
@@ -44,13 +51,15 @@ public class baekjun7453 {
 
     static int binarySearch(int target, int[] sum) {
         int right = upperBound(target, sum);
+        System.out.println("right = " + right);
         int left = lowerBound(target, sum);
+        System.out.println("left = " + left);
 
         return right - left;
     }
 
     static int upperBound(int target, int[] sum) {
-        int left = 0, right = sum.length - 1;
+        int left = 0, right = sum.length;
         while(left < right) {
             int mid = (left + right) / 2;
 
@@ -60,11 +69,12 @@ public class baekjun7453 {
                 right = mid;
             }
         }
+
         return right;
     }
 
     static int lowerBound(int target, int[] sum) {
-        int left = 0, right = sum.length - 1;
+        int left = 0, right = sum.length;
         while(left < right) {
             int mid = (left + right) / 2;
 
