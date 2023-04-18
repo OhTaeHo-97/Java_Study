@@ -3,183 +3,134 @@ package baekjun;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Stack;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class baekjun12100 {
-	static int N, answer;
-    static int[][] map;
+	static int N, max;
+    static int[][] board;
+
     static void input() {
         Reader scanner = new Reader();
+
         N = scanner.nextInt();
-        map = new int[N][N];
+        board = new int[N][N];
+
         for(int row = 0; row < N; row++) {
-            for(int col = 0; col < N; col++) map[row][col] = scanner.nextInt();
+            for(int col = 0; col < N; col++)
+                board[row][col] = scanner.nextInt();
         }
     }
 
     static void solution() {
-        answer = 0;
-        rec_func(0, map);
-        System.out.println(answer);
+        max = 2;
+        move(0, board);
+
+        System.out.println(max);
     }
 
-    static void rec_func(int count, int[][] map) {
-        if(count == 5) {
-            answer = Math.max(answer, findMax(map));
+    static void move(int moveNum, int[][] board) {
+        if(moveNum == 5) {
+            findMax(board);
             return;
         }
 
-        rec_func(count + 1, moveUp(map));
-        rec_func(count + 1, moveDown(map));
-        rec_func(count + 1, moveLeft(map));
-        rec_func(count + 1, moveRight(map));
+        move(moveNum + 1, moveUp(board));
+        move(moveNum + 1, moveDown(board));
+        move(moveNum + 1, moveLeft(board));
+        move(moveNum + 1, moveRight(board));
     }
 
-    static int findMax(int[][] map) {
-        int max = Integer.MIN_VALUE;
+    static void findMax(int[][] board) {
         for(int row = 0; row < N; row++) {
-            for(int col = 0; col < N; col++) {
-                max = Math.max(max, map[row][col]);
-            }
+            for(int col = 0; col < N; col++)
+                max = Math.max(max, board[row][col]);
         }
-        return max;
     }
 
-    static int[][] moveRight(int[][] map) {
-        int[][] copy = new int[N][N];
-        boolean[][] visited = new boolean[N][N];
-        for(int row = 0; row < N; row++) copy[row] = map[row].clone();
-
-        Stack<Integer> stack = new Stack<>();
-
-        for(int row = 0; row < N; row++) {
-            for(int col = 0; col < N - 1; col++) {
-                if(!visited[row][col]) {
-                    if(copy[row][col] == copy[row][col + 1]) {
-                        copy[row][col + 1] *= 2;
-                        copy[row][col] = 0;
-                        visited[row][col + 1] = true;
-                        stack.push(copy[row][col + 1]);
-                    } else {
-                        stack.push(copy[row][col]);
-                    }
-                    visited[row][col] = true;
-                }
-            }
-
-            for(int col = N - 1; col >= 0; col--) {
-                if(!stack.isEmpty()) copy[row][col] = stack.pop();
-                else copy[row][col] = 0;
-            }
-        }
-
-        return copy;
-    }
-
-    static int[][] moveLeft(int[][] map) {
-        int[][] copy = new int[N][N];
-        boolean[][] visited = new boolean[N][N];
-        for(int row = 0; row < N; row++) copy[row] = map[row].clone();
-
-        Stack<Integer> stack = new Stack<>();
-
-        for(int row = 0; row < N; row++) {
-            for(int col = N - 1; col > 0; col--) {
-                if(!visited[row][col]) {
-                    if(copy[row][col] == copy[row][col - 1]) {
-                        copy[row][col - 1] *= 2;
-                        copy[row][col] = 0;
-                        visited[row][col - 1] = true;
-                        stack.push(copy[row][col - 1]);
-                    } else {
-                        stack.push(copy[row][col]);
-                    }
-                    visited[row][col] = true;
-                }
-            }
-
-            for(int col = 0; col < N; col++) {
-                if(!stack.isEmpty()) copy[row][col] = stack.pop();
-                else copy[row][col] = 0;
-            }
-        }
-
-        return copy;
-    }
-
-    static int[][] moveDown(int[][] map) {
-        int[][] copy = new int[N][N];
-        boolean[][] visited = new boolean[N][N];
-        for(int row = 0; row < N; row++) copy[row] = map[row].clone();
-
-        Stack<Integer> stack = new Stack<>();
+    static int[][] moveUp(int[][] board) {
+        int[][] boardCopy = new int[N][N];
+        Queue<Integer> queue = new LinkedList<>();
 
         for(int col = 0; col < N; col++) {
-            for(int row = 0; row < N - 1; row++) {
-                if(!visited[row][col]) {
-                    if(copy[row][col] == copy[row + 1][col]) {
-                        copy[row + 1][col] *= 2;
-                        copy[row][col] = 0;
-                        visited[row + 1][col] = true;
-                        stack.push(copy[row + 1][col]);
-                    } else {
-                        stack.push(copy[row][col]);
-                    }
-                    visited[row][col] = true;
-                }
-            }
+            for(int row = 0; row < N; row++)
+                if(board[row][col] != 0) queue.offer(board[row][col]);
 
-            for(int row = N - 1; row >= 0; row--) {
-                if(!stack.isEmpty()) copy[row][col] = stack.pop();
-                else copy[row][col] = 0;
+            int index = 0;
+            while(!queue.isEmpty()) {
+                int cur = queue.poll();
+
+                if(boardCopy[index][col] == 0) boardCopy[index][col] = cur;
+                else if(boardCopy[index][col] == cur) boardCopy[index++][col] = cur * 2;
+                else boardCopy[++index][col] = cur;
             }
         }
 
-        return copy;
+        return boardCopy;
     }
 
-    static int[][] moveUp(int[][] map) {
-        int[][] copy = new int[N][N];
-        boolean[][] visited = new boolean[N][N];
-        for(int row = 0; row < N; row++) copy[row] = map[row].clone();
-
-        Stack<Integer> stack = new Stack<>();
+    static int[][] moveDown(int[][] board) {
+        int[][] boardCopy = new int[N][N];
+        Queue<Integer> queue = new LinkedList<>();
 
         for(int col = 0; col < N; col++) {
-            for(int row = N - 1; row > 0; row--) {
-                if(!visited[row][col]) {
-                    if(copy[row][col] == copy[row - 1][col]) {
-                        copy[row - 1][col] *= 2;
-                        copy[row][col] = 0;
-                        visited[row - 1][col] = true;
-                        stack.push(copy[row - 1][col]);
-                    } else {
-                        stack.push(copy[row][col]);
-                    }
-                    visited[row][col] = true;
-                }
-            }
+            for(int row = N - 1; row >= 0; row--)
+                if(board[row][col] != 0) queue.offer(board[row][col]);
 
-            for(int row = 0; row < N; row++) {
-                if(!stack.isEmpty()) copy[row][col] = stack.pop();
-                else copy[row][col] = 0;
+            int index = N - 1;
+            while(!queue.isEmpty()) {
+                int cur = queue.poll();
+
+                if(boardCopy[index][col] == 0) boardCopy[index][col] = cur;
+                else if(boardCopy[index][col] == cur) boardCopy[index--][col] = cur * 2;
+                else boardCopy[--index][col] = cur;
             }
         }
 
-        print(copy);
-
-        return copy;
+        return boardCopy;
     }
 
-    static void print(int[][] map) {
+    static int[][] moveLeft(int[][] board) {
+        int[][] boardCopy = new int[N][N];
+        Queue<Integer> queue = new LinkedList<>();
+
         for(int row = 0; row < N; row++) {
-            for(int col = 0; col < N; col++) {
-                System.out.print(map[row][col] + " ");
+            for(int col = 0; col < N; col++)
+                if(board[row][col] != 0) queue.offer(board[row][col]);
+
+            int index = 0;
+            while(!queue.isEmpty()) {
+                int cur = queue.poll();
+
+                if(boardCopy[row][index] == 0) boardCopy[row][index] = cur;
+                else if(boardCopy[row][index] == cur) boardCopy[row][index++] = cur * 2;
+                else boardCopy[row][++index] = cur;
             }
-            System.out.println();
         }
-        System.out.println();
+
+        return boardCopy;
+    }
+
+    static int[][] moveRight(int[][] board) {
+        int[][] boardCopy = new int[N][N];
+        Queue<Integer> queue = new LinkedList<>();
+
+        for(int row = 0; row < N; row++) {
+            for(int col = N - 1; col >= 0; col--)
+                if(board[row][col] != 0) queue.offer(board[row][col]);
+
+            int index = N - 1;
+            while(!queue.isEmpty()) {
+                int cur = queue.poll();
+
+                if(boardCopy[row][index] == 0) boardCopy[row][index] = cur;
+                else if(boardCopy[row][index] == cur) boardCopy[row][index--] = cur * 2;
+                else boardCopy[row][--index] = cur;
+            }
+        }
+
+        return boardCopy;
     }
 
     public static void main(String[] args) {
@@ -203,6 +154,7 @@ public class baekjun12100 {
                     e.printStackTrace();
                 }
             }
+
             return st.nextToken();
         }
 
