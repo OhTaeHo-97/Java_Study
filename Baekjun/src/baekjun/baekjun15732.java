@@ -33,23 +33,25 @@ public class baekjun15732 {
     static int binarySearch() {
         int min = 0, max = 1_000_000;
 
-        while(min < max) {
+        while(min <= max) {
             int mid = (min + max) / 2;
 
-            int sum = 0;
+            long sum = 0;
             for(int idx = 0; idx < K; idx++) {
                 int[] rule = rules[idx];
 
-                int boxNum = mid - rule[0];
-                if(boxNum == 0) sum++;
-                else if(boxNum > 0) sum += (boxNum / rule[2]) + 1;
+                if(rule[1] <= mid)
+                    sum += (rule[1] - rule[0]) / rule[2] + 1;
+                else if(rule[0] > mid) continue;
+                else
+                    sum += (mid - rule[0]) == 0 ? 1 : (mid - rule[0]) / rule[2] + 1;
             }
 
-            if(sum < D) min = mid;
+            if(sum < D) min = mid + 1;
             else max = mid - 1;
         }
 
-        return max + 1;
+        return min;
     }
 
     public static void main(String[] args) {
