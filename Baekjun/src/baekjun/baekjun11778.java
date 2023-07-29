@@ -17,7 +17,7 @@ public class baekjun11778 {
     }
 
     static void solution() {
-        long gcd = getGCD(n, m) % DIVISOR;
+        long gcd = getGCD(Math.max(n, m), Math.min(n, m));
         long[][] fibo = getFiboNum(gcd - 1, new long[][] {{1L, 1L}, {1L, 0L}});
         System.out.println(fibo[0][0] % DIVISOR);
     }
