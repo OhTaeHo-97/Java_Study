@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class baekjun3037 {
-    static final int MAX_CONFUSION = 10_000;
+    static final int DIVISOR = 1_000_000_007;
 
     static int seriesCount;
     static int confusion;
@@ -20,35 +20,51 @@ public class baekjun3037 {
     }
 
     static void solution() {
-        int maxConfusion = 1;
-        int[][] dp = new int[seriesCount + 1][MAX_CONFUSION + 1];
-        dp[1][0] = 1;
-        dp[2][0] = dp[2][1] = 1;
-
-        for (int idx = 3; idx <= seriesCount; idx++) {
-            maxConfusion += (idx - 1);
-            dp[idx][0] = 1;
-
-            for (int confusionIdx = 1; confusionIdx <= maxConfusion / 2; confusionIdx++) {
-                dp[idx][confusionIdx] = dp[idx][confusionIdx - 1] + dp[idx - 1][confusionIdx];
-            }
-
-            int otherIdx = maxConfusion / 2;
-            if (maxConfusion % 2 == 0) {
-                otherIdx--;
-            }
-            for (int confusionIdx = maxConfusion / 2 + 1; confusionIdx <= Math.min(MAX_CONFUSION, maxConfusion);
-                 confusionIdx++) {
-                dp[idx][confusionIdx] = dp[idx][otherIdx];
-                otherIdx--;
-            }
+        if (seriesCount == 1) {
+            System.out.println(0);
+            return;
+        }
+        if (confusion == 0) {
+            System.out.println(1);
+            return;
         }
 
-        for (int idx = 0; idx <= seriesCount; idx++) {
-            System.out.println(Arrays.toString(dp[idx]));
+        int[][] dp = new int[seriesCount + 1][confusion + 1];
+        init(dp);
+        fillAllNumberOfSeries(dp);
+
+        System.out.println((dp[seriesCount][confusion] - dp[seriesCount][confusion - 1] + DIVISOR) % DIVISOR);
+    }
+
+    static void init(int[][] dp) {
+        dp[2][0] = 1;
+        for (int idx = 1; idx <= confusion; idx++) {
+            dp[2][idx] = 2;
+        }
+    }
+
+    static void fillAllNumberOfSeries(int[][] dp) {
+        for (int series = 3; series <= seriesCount; series++) {
+            dp[series][0] = 1;
+            fillNumberOfSeriesByConfusion(series, dp);
+        }
+    }
+
+    static void fillNumberOfSeriesByConfusion(int series, int[][] dp) {
+        for (int c = 1; c <= confusion; c++) {
+            int firstElementConfusion = c - (series - 1);
+            calculateNumberOfSeries(series, firstElementConfusion, c, dp);
+        }
+    }
+
+    static void calculateNumberOfSeries(int series, int firstElementConfusion, int confusion, int[][] dp) {
+        if (firstElementConfusion <= 0) {
+            dp[series][confusion] = (dp[series][confusion - 1] + dp[series - 1][confusion]) % DIVISOR;
+            return;
         }
 
-        System.out.println(dp[seriesCount][confusion]);
+        dp[series][confusion] = (dp[series][confusion - 1]
+                + (dp[series - 1][confusion] - dp[series - 1][firstElementConfusion - 1]) % DIVISOR) % DIVISOR;
     }
 
     public static void main(String[] args) {
