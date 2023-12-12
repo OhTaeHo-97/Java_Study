@@ -16,6 +16,7 @@ public class baekjun1045 {
     static int cityCount;
     static int roadCount;
     static int[] parents;
+    static boolean[][] connectivity;
     static List<Road> roads;
     static Set<Road> mstEdges;
 
@@ -25,6 +26,7 @@ public class baekjun1045 {
         cityCount = scanner.nextInt();
         roadCount = scanner.nextInt();
         parents = new int[cityCount];
+        connectivity = new boolean[cityCount][cityCount];
         roads = new ArrayList<>();
 
         for (int startCity = 0; startCity < cityCount; startCity++) {
@@ -45,24 +47,43 @@ public class baekjun1045 {
             return;
         }
 
-        int remainCount = roadCount - (cityCount - 1);
-        for (int idx = 0; idx < roads.size() && remainCount > 0; idx++) {
-            Road road = roads.get(idx);
-            if (!mstEdges.contains(road)) {
-                mstEdges.add(road);
-                remainCount--;
-            }
+        if (!findRemainRoads()) {
+            System.out.println(-1);
+            return;
         }
 
+        int[] answers = calculateEndPointCount();
+        print(answers);
+    }
+
+    static void print(int[] answers) {
+        StringBuilder answer = new StringBuilder();
+        Arrays.stream(answers).forEach(count -> answer.append(count).append(' '));
+        System.out.println(answer);
+    }
+
+    static int[] calculateEndPointCount() {
         int[] answers = new int[cityCount];
         for (Road edge : mstEdges) {
             answers[edge.startCity]++;
             answers[edge.endCity]++;
         }
+        return answers;
+    }
 
-        StringBuilder answer = new StringBuilder();
-        Arrays.stream(answers).forEach(count -> answer.append(count).append(' '));
-        System.out.println(answer);
+    static boolean findRemainRoads() {
+        int remainCount = roadCount - (cityCount - 1);
+
+        for (int idx = 0; idx < roads.size() && remainCount > 0; idx++) {
+            Road road = roads.get(idx);
+            if (!mstEdges.contains(road) && !connectivity[road.endCity][road.startCity]) {
+                mstEdges.add(road);
+                connectivity[road.startCity][road.endCity] = true;
+                remainCount--;
+            }
+        }
+
+        return remainCount == 0;
     }
 
     static boolean kruskal() {
@@ -74,6 +95,7 @@ public class baekjun1045 {
 
             if (!isSameParent(curRoad.startCity, curRoad.endCity)) {
                 union(curRoad.startCity, curRoad.endCity);
+                connectivity[curRoad.startCity][curRoad.endCity] = true;
                 count--;
                 mstEdges.add(curRoad);
             }
