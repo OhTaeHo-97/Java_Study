@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 public class baekjun2208 {
+    // TreeSet 활용 풀이
     static int jewelryCount;
     static int consecutiveJewelryCount;
     static int[] values;
@@ -41,6 +42,41 @@ public class baekjun2208 {
 
         System.out.println(answer);
     }
+
+    // dp 풀이
+    /*
+    static int jewelryCount;
+    static int consecutiveJewelryCount;
+    static int[] values;
+    static int[] prefixSum;
+
+    static void input() {
+        Reader scanner = new Reader();
+
+        jewelryCount = scanner.nextInt();
+        consecutiveJewelryCount = scanner.nextInt();
+        values = new int[jewelryCount + 1];
+        prefixSum = new int[jewelryCount + 1];
+
+        for (int idx = 1; idx <= jewelryCount; idx++) {
+            values[idx] = scanner.nextInt();
+            prefixSum[idx] = prefixSum[idx - 1] + values[idx];
+        }
+    }
+
+    static void solution() {
+        int answer = 0;
+        int[] dp = new int[jewelryCount + 1];
+        dp[consecutiveJewelryCount] = prefixSum[consecutiveJewelryCount];
+
+        for (int idx = consecutiveJewelryCount + 1; idx <= jewelryCount; idx++) {
+            dp[idx] = Math.max(prefixSum[idx] - prefixSum[idx - consecutiveJewelryCount], dp[idx - 1] + values[idx]);
+            answer = Math.max(answer, dp[idx]);
+        }
+
+        System.out.println(answer);
+    }
+     */
 
     public static void main(String[] args) {
         input();
