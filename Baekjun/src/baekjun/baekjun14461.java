@@ -37,18 +37,20 @@ public class baekjun14461 {
 
     static long calculateCrossingTimes() {
         Queue<Pasture> queue = new PriorityQueue<>();
-        long[][] times = new long[size][size];
+        long[][][] times = new long[size][size][MAX_CROSS_COUNT];
         for (int row = 0; row < size; row++) {
-            Arrays.fill(times[row], Integer.MAX_VALUE);
+            for (int col = 0; col < size; col++) {
+                Arrays.fill(times[row][col], Long.MAX_VALUE);
+            }
         }
 
         queue.offer(new Pasture(0, 0, 0, 0));
-        times[0][0] = 0;
+        times[0][0][0] = 0;
 
         while (!queue.isEmpty()) {
             Pasture cur = queue.poll();
 
-            if (times[cur.x][cur.y] < cur.time) {
+            if (times[cur.x][cur.y][cur.moveCount] < cur.time) {
                 continue;
             }
 
@@ -65,15 +67,15 @@ public class baekjun14461 {
                         nextCrossCount = 0;
                     }
 
-                    if (times[cx][cy] > nextTime) {
-                        times[cx][cy] = nextTime;
+                    if (times[cx][cy][nextCrossCount] > nextTime) {
+                        times[cx][cy][nextCrossCount] = nextTime;
                         queue.offer(new Pasture(cx, cy, nextCrossCount, nextTime));
                     }
                 }
             }
         }
 
-        return times[size - 1][size - 1];
+        return Arrays.stream(times[size - 1][size - 1]).min().getAsLong();
     }
 
     static boolean isInMap(int x, int y) {
