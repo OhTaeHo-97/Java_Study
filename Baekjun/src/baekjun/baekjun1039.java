@@ -8,72 +8,64 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class baekjun1039 {
-	static int N, K;
-    static int answer;
+    private static char[] N;
+    private static int K;
+    private static int max = -1;
 
-    static void input() {
+    private static void input() {
         Reader scanner = new Reader();
 
-        String integer = scanner.next();
-        N = Integer.parseInt(integer);
+        String number = scanner.next();
+        N = number.toCharArray();
         K = scanner.nextInt();
     }
 
-    static void solution() {
-        answer = Integer.MIN_VALUE;
+    private static void solution() {
         bfs();
-        System.out.println(answer);
+        System.out.println(max);
     }
 
-    static void bfs() {
-        Queue<Number> queue = new LinkedList<>();
-        boolean[][] visited = new boolean[1000001][K + 1];
+    private static void bfs() {
+        Queue<String> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[1_000_000 + 1][K + 1];
 
-        queue.offer(new Number(N, 0));
-        visited[N][0] = true;
+        queue.offer(new String(N));
+        visited[Integer.parseInt(new String(N))][0] = true;
 
-        while(!queue.isEmpty()) {
-            Number cur = queue.poll();
-
-            if(cur.count == K) {
-                answer = Math.max(answer, cur.num);
-                continue;
-            }
-
-            int len = String.valueOf(cur.num).length();
-
-            for(int i = 0; i < len - 1; i++) {
-                for(int j = i + 1; j < len; j++) {
-                    int next = swap(cur.num, i, j);
-
-                    if(next != -1 && !visited[next][cur.count + 1]) {
-                        queue.offer(new Number(next, cur.count + 1));
-                        visited[next][cur.count + 1] = true;
+        int turn = 0;
+        while (!queue.isEmpty() && turn < K) {
+            int size = queue.size();
+            for (int count = 0; count < size; count++) {
+                String cur = queue.poll();
+                for (int idx1 = 0; idx1 < cur.length(); idx1++) {
+                    for (int idx2 = idx1 + 1; idx2 < cur.length(); idx2++) {
+                        String swappedNumber = swap(idx1, idx2, cur);
+                        if (swappedNumber.charAt(0) == '0') {
+                            continue;
+                        }
+                        int number = Integer.parseInt(swappedNumber);
+                        if (!visited[number][turn + 1]) {
+                            visited[number][turn + 1] = true;
+                            if (turn + 1 == K) {
+                                max = Math.max(max, number);
+                            } else {
+                                queue.offer(String.valueOf(number));
+                            }
+                        }
                     }
                 }
             }
+            turn++;
         }
     }
 
-    static int swap(int num, int i, int j) {
-        char[] numArr = String.valueOf(num).toCharArray();
+    private static String swap(int idx1, int idx2, String number) {
+        char[] numArr = number.toCharArray();
+        char temp = numArr[idx1];
+        numArr[idx1] = numArr[idx2];
+        numArr[idx2] = temp;
 
-        if(i == 0 && numArr[j] == '0') return -1;
-
-        char temp = numArr[i];
-        numArr[i] = numArr[j];
-        numArr[j] = temp;
-
-        return Integer.parseInt(new String(numArr));
-    }
-
-    static class Number {
-        int num, count;
-
-        public Number(int num, int count) {
-            this.num = num;
-            this.count = count;
-        }
+        return new String(numArr);
     }
 
     public static void main(String[] args) {
@@ -90,7 +82,7 @@ public class baekjun1039 {
         }
 
         String next() {
-            while(st == null || !st.hasMoreElements()) {
+            while (st == null || !st.hasMoreElements()) {
                 try {
                     st = new StringTokenizer(br.readLine());
                 } catch (IOException e) {
