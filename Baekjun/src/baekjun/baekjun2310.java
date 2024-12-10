@@ -63,6 +63,9 @@ public class baekjun2310 {
 
         while(!queue.isEmpty()) {
             Node cur = queue.poll();
+            if(cur.roomNumber == roomCount) {
+                return true;
+            }
             if(cur.cost < costs[cur.roomNumber]) {
                 continue;
             }
